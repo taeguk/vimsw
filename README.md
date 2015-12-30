@@ -1,2 +1,2 @@
-# vim-switcher
-Switch vim settings easily
+# vimsw
+Switch a setting easily among several vim settings.
