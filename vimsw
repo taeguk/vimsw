@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-VERSION="0.0.1"
+VERSION="0.0.2"
+AUTHOR="taeguk (http://taeguk.me)"
 
 # global constants
 VIMSW_DIR="$HOME/.vimsw"
@@ -269,10 +270,10 @@ not_install_msg() {
 execute() {
 	if [ $# -eq 0 ]; then
 		if [ $installed -eq 0 ]; then 
-			show_usage; 
-			return 1; 
+			show_usage
+			return 1
 		fi
-		show_list
+		show_usage
 		return 0
 	fi
 
