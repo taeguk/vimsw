@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="0.0.2"
+VERSION="0.0.3"
 AUTHOR="taeguk (http://taeguk.me)"
 
 # global constants
@@ -184,8 +184,8 @@ del_setting() {
 
 upd_setting() {
 	if [ $cur_id -ge $MAX_SETTING_NUM ]; then
-		# it is not error!
-		return 0
+		echo "[!] Fail to update setting! Your setting is not registered."
+		return 1
 	else
 		local name=${settings[$cur_id]}
 		if [ -e "$VIMSW_VIMRC_PREFIX$name" ]; then
