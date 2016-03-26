@@ -7,8 +7,8 @@ AUTHOR="taeguk (http://taeguk.me)"
 VIMSW_DIR="$HOME/.vimsw"
 VIMSW_CONFIG_FILE="$VIMSW_DIR/config"
 VIMSW_SETTING_DIR="$VIMSW_DIR/settings"
-VIMSW_VIMRC_PREFIX="$VIMSW_SETTING_DIR/vimrc_"	# .vimrc_name
-VIMSW_VIM_PREFIX="$VIMSW_SETTING_DIR/vim_"		# .vim_name
+VIMSW_VIMRC_PREFIX="$VIMSW_SETTING_DIR/vimrc_"  # .vimrc_name
+VIMSW_VIM_PREFIX="$VIMSW_SETTING_DIR/vim_"      # .vim_name
 ORG_VIMRC="$HOME/.vimrc"
 ORG_VIM="$HOME/.vim"
 MAX_SETTING_NUM=200
@@ -21,306 +21,306 @@ NO_CUR_SETTING="nothing"
 
 # $1 : name of variable where result is stored in.
 cf_load_cur_id() {
-	local id=`sed -n '1p' "$VIMSW_CONFIG_FILE"`
+    local id=`sed -n '1p' "$VIMSW_CONFIG_FILE"`
 
-	if [ "$id" = "$NO_CUR_SETTING" ]; then
-		id=$MAX_SETTING_NUM
-	fi
-	
-	eval "$1=$id"
+    if [ "$id" = "$NO_CUR_SETTING" ]; then
+        id=$MAX_SETTING_NUM
+    fi
+    
+    eval "$1=$id"
 }
 # $1 : cur_id
 cf_store_cur_id() {
-	sed -i '1s/^.*$/'"$1"'/' "$VIMSW_CONFIG_FILE"
+    sed -i '1s/^.*$/'"$1"'/' "$VIMSW_CONFIG_FILE"
 }
 # $1 : name of variable where result is stored in.
 cf_load_setting_num() {
-	eval "$1=`sed -n '2p' \"\$VIMSW_CONFIG_FILE\"`"
+    eval "$1=`sed -n '2p' \"\$VIMSW_CONFIG_FILE\"`"
 }
 # $1 : setting_num
 cf_store_setting_num() {
-	sed -i '2s/^.*$/'"$1"'/' "$VIMSW_CONFIG_FILE"
+    sed -i '2s/^.*$/'"$1"'/' "$VIMSW_CONFIG_FILE"
 }
 # $1 : id of target setting
 cf_del_setting_line() {
-	local line=`expr $1 + 3`
-	sed -i "$line"'d' "$VIMSW_CONFIG_FILE"
+    local line=`expr $1 + 3`
+    sed -i "$line"'d' "$VIMSW_CONFIG_FILE"
 }
 
 get_id_by_name() {
-	local idx=0
-	for name in "${settings[@]}"
-	do
-		if [ "$name" = "$1" ]; then
-			return $idx
-		fi
-		idx=`expr $idx + 1`
-	done
-	return $MAX_SETTING_NUM
+    local idx=0
+    for name in "${settings[@]}"
+    do
+        if [ "$name" = "$1" ]; then
+            return $idx
+        fi
+        idx=`expr $idx + 1`
+    done
+    return $MAX_SETTING_NUM
 }
 
 # $1 : name
 name_exists() {
-	get_id_by_name "$1"
-	local id=$?
-	if [ $id -ge $MAX_SETTING_NUM ]; then
-		return 1
-	else
-		return 0
-	fi
+    get_id_by_name "$1"
+    local id=$?
+    if [ $id -ge $MAX_SETTING_NUM ]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
 load_config() {
-	cf_load_cur_id cur_id
-	cf_load_setting_num setting_num
-	local idx=-2	# skip 2 lines.
-	#sed -n '3,$p' "$VIMSW_CONFIG_FILE" | 
-	while read name; do
-		if [ $idx -ge $MAX_SETTING_NUM ]; then
-			break
-		fi
-		if [ $idx -ge 0 ]; then
-			settings[$idx]="$name"
-		fi
-		idx=`expr $idx + 1`
-	done < "$VIMSW_CONFIG_FILE"
+    cf_load_cur_id cur_id
+    cf_load_setting_num setting_num
+    local idx=-2    # skip 2 lines.
+    #sed -n '3,$p' "$VIMSW_CONFIG_FILE" | 
+    while read name; do
+        if [ $idx -ge $MAX_SETTING_NUM ]; then
+            break
+        fi
+        if [ $idx -ge 0 ]; then
+            settings[$idx]="$name"
+        fi
+        idx=`expr $idx + 1`
+    done < "$VIMSW_CONFIG_FILE"
 }
 
 init() {
-	if [[ ! -d "$VIMSW_DIR" || ! -d "$VIMSW_SETTING_DIR" ||
-		! -f "$VIMSW_CONFIG_FILE" ]]; then
-		# if not installed
-		installed=0
-	else
-		# if installed
-		installed=1
-		load_config
-	fi
-	#echo -n "[I] initializing finished. installed : $installed, "
-	#echo "setting_num : $setting_num"
-	return 0
+    if [[ ! -d "$VIMSW_DIR" || ! -d "$VIMSW_SETTING_DIR" ||
+        ! -f "$VIMSW_CONFIG_FILE" ]]; then
+        # if not installed
+        installed=0
+    else
+        # if installed
+        installed=1
+        load_config
+    fi
+    #echo -n "[I] initializing finished. installed : $installed, "
+    #echo "setting_num : $setting_num"
+    return 0
 }
 
 install() {
-	# 1. return 1 if installed.
-	# 2. install.
-	if [ $installed -eq 1 ]; then		
-		# if installed
-		echo "[!] Already installed."
-		return 1
-	fi
-	if [ -e "$VIMSW_DIR" ]; then
-		# if directory exists
-		echo "[!] Cannot install in the system."
-		return 1
-	fi
-	mkdir "$VIMSW_DIR" || return 1
-	mkdir "$VIMSW_SETTING_DIR" || return 1
-	echo "$NO_CUR_SETTING" > "$VIMSW_CONFIG_FILE" || return 1
-	echo 0 >> "$VIMSW_CONFIG_FILE" || return 1
+    # 1. return 1 if installed.
+    # 2. install.
+    if [ $installed -eq 1 ]; then       
+        # if installed
+        echo "[!] Already installed."
+        return 1
+    fi
+    if [ -e "$VIMSW_DIR" ]; then
+        # if directory exists
+        echo "[!] Cannot install in the system."
+        return 1
+    fi
+    mkdir "$VIMSW_DIR" || return 1
+    mkdir "$VIMSW_SETTING_DIR" || return 1
+    echo "$NO_CUR_SETTING" > "$VIMSW_CONFIG_FILE" || return 1
+    echo 0 >> "$VIMSW_CONFIG_FILE" || return 1
 
-	echo "[*] install succesfully!"
-	return 0
+    echo "[*] install succesfully!"
+    return 0
 }
 
 uninstall() {
-	rm -rf "$VIMSW_DIR"
+    rm -rf "$VIMSW_DIR"
 
-	echo "[*] uninstall succesfully!"
-	return 0
+    echo "[*] uninstall succesfully!"
+    return 0
 }
 # $1 : name of setting.
 reg_setting() {
-	if [ $setting_num -ge $MAX_SETTING_NUM ]; then
-		echo "[!] Max the number of settings is $MAX_SETTING_NUM!"
-		return 1
-	fi
-	if name_exists "$1"; then
-		# name is duplicated.
-		echo "[!] name is duplicated."
-		return 1
-	fi
-	if [ -e "$ORG_VIMRC" ]; then
-		cp -f "$ORG_VIMRC" "$VIMSW_VIMRC_PREFIX$1"
-	fi
-	if [ -e "$ORG_VIM" ]; then
-		cp -rf "$ORG_VIM" "$VIMSW_VIM_PREFIX$1"
-	fi
-	settings[$setting_num]="$1"
-	cf_store_cur_id "$setting_num"
-	setting_num=`expr $setting_num + 1`
-	cf_store_setting_num "$setting_num"
-	echo "$1" >> "$VIMSW_CONFIG_FILE"
+    if [ $setting_num -ge $MAX_SETTING_NUM ]; then
+        echo "[!] Max the number of settings is $MAX_SETTING_NUM!"
+        return 1
+    fi
+    if name_exists "$1"; then
+        # name is duplicated.
+        echo "[!] name is duplicated."
+        return 1
+    fi
+    if [ -e "$ORG_VIMRC" ]; then
+        cp -f "$ORG_VIMRC" "$VIMSW_VIMRC_PREFIX$1"
+    fi
+    if [ -e "$ORG_VIM" ]; then
+        cp -rf "$ORG_VIM" "$VIMSW_VIM_PREFIX$1"
+    fi
+    settings[$setting_num]="$1"
+    cf_store_cur_id "$setting_num"
+    setting_num=`expr $setting_num + 1`
+    cf_store_setting_num "$setting_num"
+    echo "$1" >> "$VIMSW_CONFIG_FILE"
 
-	echo "[*] register setting succesfully!"
-	return 0
+    echo "[*] register setting succesfully!"
+    return 0
 }
 
 # $1 : name of target setting.
 del_setting() {
-	get_id_by_name "$1"
-	local target_id=$?
-	if [ $target_id -ge $MAX_SETTING_NUM ]; then
-		echo "[!] $1 doesn't exist."
-		return 1
-	fi
-	if [ $target_id -eq $cur_id ]; then
-		echo "[!] Can't delete setting where you are in."
-		return 1
-	fi
-	rm -rf "$VIMSW_VIM_PREFIX$1" "$VIMSW_VIMRC_PREFIX$1"
-	if [[ $cur_id -lt $MAX_SETTING_NUM && $cur_id -gt $target_id ]]; then
-		cur_id=`expr $cur_id - 1`
-	fi
-	setting_num=`expr $setting_num - 1`
-	cf_store_cur_id "$cur_id"
-	cf_store_setting_num "$setting_num"
-	cf_del_setting_line $target_id
-	load_config
+    get_id_by_name "$1"
+    local target_id=$?
+    if [ $target_id -ge $MAX_SETTING_NUM ]; then
+        echo "[!] $1 doesn't exist."
+        return 1
+    fi
+    if [ $target_id -eq $cur_id ]; then
+        echo "[!] Can't delete setting where you are in."
+        return 1
+    fi
+    rm -rf "$VIMSW_VIM_PREFIX$1" "$VIMSW_VIMRC_PREFIX$1"
+    if [[ $cur_id -lt $MAX_SETTING_NUM && $cur_id -gt $target_id ]]; then
+        cur_id=`expr $cur_id - 1`
+    fi
+    setting_num=`expr $setting_num - 1`
+    cf_store_cur_id "$cur_id"
+    cf_store_setting_num "$setting_num"
+    cf_del_setting_line $target_id
+    load_config
 
-	echo "[*] delete setting succesfully!"
-	return 0
+    echo "[*] delete setting succesfully!"
+    return 0
 }
 
 upd_setting() {
-	if [ $cur_id -ge $MAX_SETTING_NUM ]; then
-		echo "[!] Fail to update setting! Your setting is not registered."
-		return 1
-	else
-		local name=${settings[$cur_id]}
-		if [ -e "$VIMSW_VIMRC_PREFIX$name" ]; then
-			rm -rf "$VIMSW_VIMRC_PREFIX$name"
-		fi
-		if [ -e "$VIMSW_VIM_PREFIX$name" ]; then
-			rm -rf "$VIMSW_VIM_PREFIX$name"
-		fi
-		if [ -f "$ORG_VIMRC" ]; then
-			cp -f "$ORG_VIMRC" "$VIMSW_VIMRC_PREFIX$name"
-		fi
-		if [ -d "$ORG_VIM" ]; then
-			cp -rf "$ORG_VIM" "$VIMSW_VIM_PREFIX$name"
-		fi
-	fi
-	echo "[*] update setting succesfully!"
-	return 0
+    if [ $cur_id -ge $MAX_SETTING_NUM ]; then
+        echo "[!] Fail to update setting! Your setting is not registered."
+        return 1
+    else
+        local name=${settings[$cur_id]}
+        if [ -e "$VIMSW_VIMRC_PREFIX$name" ]; then
+            rm -rf "$VIMSW_VIMRC_PREFIX$name"
+        fi
+        if [ -e "$VIMSW_VIM_PREFIX$name" ]; then
+            rm -rf "$VIMSW_VIM_PREFIX$name"
+        fi
+        if [ -f "$ORG_VIMRC" ]; then
+            cp -f "$ORG_VIMRC" "$VIMSW_VIMRC_PREFIX$name"
+        fi
+        if [ -d "$ORG_VIM" ]; then
+            cp -rf "$ORG_VIM" "$VIMSW_VIM_PREFIX$name"
+        fi
+    fi
+    echo "[*] update setting succesfully!"
+    return 0
 }
 
 # $1 : name of target setting.
 switch() {
-	get_id_by_name "$1"
-	local target_id=$?
-	if [ $target_id -ge $MAX_SETTING_NUM ]; then
-		echo "[!] $1 doesn't exists."
-		return 1
-	fi
-	if [ $target_id -eq $cur_id ]; then
-		echo "[!] Already you are in $1 setting."
-		return 1
-	fi
-	#if ! upd_setting > /dev/null; then
-	#	echo "[!] fail to update setting."
-	#	return 1
-	#fi
-	if [ -e "$ORG_VIMRC" ]; then
-		rm -rf "$ORG_VIMRC"
-	fi
-	if [ -e "$ORG_VIM" ]; then
-		rm -rf "$ORG_VIM"
-	fi
-	if [ -f "$VIMSW_VIMRC_PREFIX$1" ]; then
-		cp -f "$VIMSW_VIMRC_PREFIX$1" "$ORG_VIMRC" 
-	fi
-	if [ -d "$VIMSW_VIM_PREFIX$1" ]; then
-		cp -rf "$VIMSW_VIM_PREFIX$1" "$ORG_VIM"
-	fi
-	local b_cur_id=$cur_id
-	cur_id=$target_id
-	cf_store_cur_id "$cur_id"
+    get_id_by_name "$1"
+    local target_id=$?
+    if [ $target_id -ge $MAX_SETTING_NUM ]; then
+        echo "[!] $1 doesn't exists."
+        return 1
+    fi
+    if [ $target_id -eq $cur_id ]; then
+        echo "[!] Already you are in $1 setting."
+        return 1
+    fi
+    #if ! upd_setting > /dev/null; then
+    #   echo "[!] fail to update setting."
+    #   return 1
+    #fi
+    if [ -e "$ORG_VIMRC" ]; then
+        rm -rf "$ORG_VIMRC"
+    fi
+    if [ -e "$ORG_VIM" ]; then
+        rm -rf "$ORG_VIM"
+    fi
+    if [ -f "$VIMSW_VIMRC_PREFIX$1" ]; then
+        cp -f "$VIMSW_VIMRC_PREFIX$1" "$ORG_VIMRC" 
+    fi
+    if [ -d "$VIMSW_VIM_PREFIX$1" ]; then
+        cp -rf "$VIMSW_VIM_PREFIX$1" "$ORG_VIM"
+    fi
+    local b_cur_id=$cur_id
+    cur_id=$target_id
+    cf_store_cur_id "$cur_id"
 
-	echo "[*] switch from ${settings[$b_cur_id]} to $1 succesfully!"
-	return 0
+    echo "[*] switch from ${settings[$b_cur_id]} to $1 succesfully!"
+    return 0
 }
 
 show_list() {
-	local idx=0
-	echo "----- list of settings -----"
-	for name in "${settings[@]}"
-	do
-		if [ $idx -eq $cur_id ]; then
-			echo " > $name"
-		else
-			echo "   $name"
-		fi
-		idx=`expr $idx + 1`
-	done
-	if [ $cur_id -ge $MAX_SETTING_NUM ]; then
-		echo " * current setting is not registed!"
-	fi
-	echo "----------------------------"
+    local idx=0
+    echo "----- list of settings -----"
+    for name in "${settings[@]}"
+    do
+        if [ $idx -eq $cur_id ]; then
+            echo " > $name"
+        else
+            echo "   $name"
+        fi
+        idx=`expr $idx + 1`
+    done
+    if [ $cur_id -ge $MAX_SETTING_NUM ]; then
+        echo " * current setting is not registed!"
+    fi
+    echo "----------------------------"
 }
 
 show_help() {
-	show_usage
+    show_usage
 }
 
 not_install_msg() {
-	echo "[!] Not installed in the system."
+    echo "[!] Not installed in the system."
 }
 
 execute() {
-	if [ $# -eq 0 ]; then
-		if [ $installed -eq 0 ]; then 
-			show_usage
-			return 1
-		fi
-		show_usage
-		return 0
-	fi
+    if [ $# -eq 0 ]; then
+        if [ $installed -eq 0 ]; then 
+            show_usage
+            return 1
+        fi
+        show_usage
+        return 0
+    fi
 
-	local key="$1"
-	case $key in
-		install)
-			install || (echo "[!] install failed. "; return 1)
-			;;
-		uninstall)
-			uninstall || return 1
-			;;
-		register|reg|r)
-			if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
-			if [ -z "$2" ]; then show_usage; return 1; fi
-			reg_setting "$2" || return 1
-			;;
-		delete|del|d)
-			if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
-			if [ -z "$2" ]; then show_usage; return 1; fi
-			del_setting "$2" || return 1
-			;;
-		update|upd|u)
-			if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
-			upd_setting || return 1
-			;;
-		switch|swit|s)
-			if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
-			if [ -z "$2" ]; then show_usage; return 1; fi
-			switch "$2" || return 1
-			;;
-		list|l)
-			if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
-			show_list
-			;;
-		help|h)
-			show_help
-			;;
-		*)
-			show_usage
-			return 1
-			;;
-	esac
-	return 0
+    local key="$1"
+    case $key in
+        install)
+            install || (echo "[!] install failed. "; return 1)
+            ;;
+        uninstall)
+            uninstall || return 1
+            ;;
+        register|reg|r)
+            if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
+            if [ -z "$2" ]; then show_usage; return 1; fi
+            reg_setting "$2" || return 1
+            ;;
+        delete|del|d)
+            if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
+            if [ -z "$2" ]; then show_usage; return 1; fi
+            del_setting "$2" || return 1
+            ;;
+        update|upd|u)
+            if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
+            upd_setting || return 1
+            ;;
+        switch|swit|s)
+            if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
+            if [ -z "$2" ]; then show_usage; return 1; fi
+            switch "$2" || return 1
+            ;;
+        list|l)
+            if [ $installed -eq 0 ]; then not_install_msg; return 1; fi
+            show_list
+            ;;
+        help|h)
+            show_help
+            ;;
+        *)
+            show_usage
+            return 1
+            ;;
+    esac
+    return 0
 }
 
 show_usage() {
-	echo "Usage: vimsw [COMMAND] [args]
+    echo "Usage: vimsw [COMMAND] [args]
 Commands:
     install                 : install vimsw in the home directory.
     uninstall               : uninstall vimsw.
@@ -330,12 +330,12 @@ Commands:
     switch|swit|s <name>    : switch setting to <name>.
     list|l                  : list all settings.
     help|h                  : show help massages.
-	"
+    "
 }
 
 main() {
-	init || return 1
-	execute "$@" || return 1
+    init || return 1
+    execute "$@" || return 1
 }
 
 main "$@" || exit 1
